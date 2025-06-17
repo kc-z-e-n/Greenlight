@@ -1,17 +1,3 @@
-<<<<<<< Updated upstream
-import React from 'react';
-
-const SessionRoom: React.FC = () => {
-    return (
-      <div>
-        <h1>Create Session</h1>
-        {/* Your UI */}
-      </div>
-    );
-  };
-  
-  export default SessionRoom;
-=======
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 //@ts-ignore
@@ -29,13 +15,13 @@ const SessionRoom: React.FC = () => {
 
   // Listen for quiz
   useEffect(() => {
-    const quizRef = ref(database, `sessions/${sessionId}/quiz`);
+    const quizRef = ref(database, `quizzes/${sessionId}`);
     onValue(quizRef, (snapshot) => {
       const data = snapshot.val();
       if (data) setQuiz(data);
     });
 
-    const responseRef = ref(database, `sessions/${sessionId}/responses`);
+    const responseRef = ref(database, `quizzes/${sessionId}/responses`);
     onValue(responseRef, (snapshot) => {
       const all = snapshot.val() || {};
       const counts: Record<string, number> = {};
@@ -48,7 +34,7 @@ const SessionRoom: React.FC = () => {
 
   const handleSubmit = () => {
     if (!selected) return;
-    set(ref(database, `sessions/${sessionId}/responses/${userId}`), selected);
+    set(ref(database, `quizzes/${sessionId}/responses/${userId}`), selected);
     setSubmitted(true);
   };
 
@@ -101,4 +87,3 @@ const SessionRoom: React.FC = () => {
 };
 
 export default SessionRoom;
->>>>>>> Stashed changes
