@@ -1,7 +1,9 @@
 // src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth"; // if using auth
-import { getDatabase } from "firebase/database";
+import { getDatabase, ref, get } from "firebase/database";
+import { useEffect } from "react";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyBudntLto0z_wWhVwNJlzCVeK7BN1bZGjU",
@@ -20,4 +22,7 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);           // optional
 // Initialize Realtime Database and get a reference to the service
 export const database = getDatabase(app);
+
+
+
 export default app;

@@ -1,17 +1,26 @@
-import { Link } from 'react-router-dom';
+// src/App.tsx
+import React, { useState } from 'react';
+import RoomList from './RoomList';
+import VideoCall from './VideoCall';
 
-const App: React.FC = () => (
-  <div className="p-8">
-    <h1 className="text-3xl mb-6">Welcome to EduCollab</h1>
-    <div className="space-x-4">
-      <Link to="/create-session" className="bg-blue-600 text-white px-4 py-2 rounded">
-        Create Session
-      </Link>
-      <Link to="/join-session" className="bg-green-600 text-white px-4 py-2 rounded">
-        Join Session
-      </Link>
+
+const App: React.FC = () => {
+  const [roomUrl, setRoomUrl] = useState<string | null>(null);
+
+  const handleSelectRoom = (url: string) => {
+    setRoomUrl(url);
+  };
+
+  return (
+    <div className="p-8">
+      <h1 className="text-3xl mb-6">Daily + Firebase Video Call</h1>
+      {!roomUrl ? (
+        <RoomList onSelectRoom={handleSelectRoom} />
+      ) : (
+        <VideoCall roomUrl={roomUrl} />
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 export default App;
