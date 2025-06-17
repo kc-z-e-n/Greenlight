@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PostItNote from './PostItNote';
+import PostItNote from '../components/PostItNote';
 
 type Note = {
   id: number;
