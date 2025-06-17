@@ -11,7 +11,6 @@ import CreateClass from './pages/CreateClass';
 import AddStudentToClass from './pages/AddStudentToClass';
 import CreateQuizForm from './pages/CreateQuizForm';
 import SessionRoom from './pages/SessionRoom';
-import ClassPage from './pages/ClassPage'; // ← make sure this exists
 
 const AppHome: React.FC = () => {
   const navigate = useNavigate();
