@@ -23,12 +23,21 @@
   }
   
   .notes-grid {
+    /*display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;*/
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;  /* Center notes horizontally */
     gap: 1rem;
+    width: 100%;
   }
   
   .new-note-input {
+    /*margin-bottom: 1rem;*/
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
     margin-bottom: 1rem;
   }
   

@@ -1,7 +1,12 @@
 /* Main page container */
 .whiteboard-page {
-    font-family: 'Arial', sans-serif;
-    padding: 1rem;
+    /*font-family: 'Arial', sans-serif;
+    padding: 1rem;*/
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
   }
   
   /* Green label header */
@@ -93,3 +98,14 @@
     justify-content: flex-start;
   }
   
+  .iframe-wrapper {
+    display: block;
+    width: 100%;
+  }
+  
+  .whiteboard-iframe {
+    display: block;
+    border: none;
+    height: 100%;
+    width: 100%;
+  }

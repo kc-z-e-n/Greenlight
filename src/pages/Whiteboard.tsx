@@ -25,10 +25,16 @@ const Whiteboard: React.FC = () => {
 
   return (
     <div className="whiteboard-page">
-      <div className="whiteboard-label">Whiteboard</div>
 
-      <WhiteboardCanvas />
 
+      <iframe
+        src="http://localhost:3000"
+        title="Collaborative Whiteboard"
+        className="whiteboard-iframe"
+      />
+
+
+      {/*
       <div className="discussion-divider">DISCUSSION</div>
 
       <div className="new-note-input">
@@ -45,8 +51,8 @@ const Whiteboard: React.FC = () => {
         {notes.map((note) => (
           <PostItNote key={note.id} id={note.id} content={note.content} />
         ))}
-      </div>
-    </div>
+      </div>*/}
+    </div> 
   );
 };
 
