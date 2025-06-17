@@ -3,38 +3,105 @@ import RoomList from './RoomList';
 import VideoCall from './VideoCall';
 import PeerFeedbackFlow from './PeerFeedbackFlow';
 import { Link } from 'react-router-dom';
-import AuthButtons from './components/AuthButtons'; 
+import AuthButtons from './components/AuthButtons';
 
 const App: React.FC = () => {
   const [roomUrl, setRoomUrl] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
 
-  const sessionId = 'session_abc';       // reuse for quiz launcher panel
+  const sessionId = 'session_abc'; // Reuse for quiz launcher panel
 
   const handleSelectRoom = (url: string) => setRoomUrl(url);
 
+  const containerStyle: React.CSSProperties = {
+    display: 'flex',
+    padding: '2rem',
+    minHeight: '100vh',
+    alignItems: 'flex-start',
+    backgroundColor: '#f9fafb',
+    fontFamily: 'Arial, sans-serif',
+  };
+
+  const leftColumnStyle: React.CSSProperties = {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.5rem',
+    marginBottom: '1.5rem',
+  };
+
+  const headerStyle: React.CSSProperties = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  };
+
+  const headingStyle: React.CSSProperties = {
+    fontSize: '2rem',
+    fontWeight: 'bold',
+    margin: 0,
+  };
+
+  const buttonGroupStyle: React.CSSProperties = {
+    display: 'flex',
+    gap: '1rem',
+  };
+
+  const linkStyle: React.CSSProperties = {
+    padding: '0.5rem 1rem',
+    borderRadius: '0.375rem',
+    color: 'white',
+    textDecoration: 'none',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+  };
+
+  const rightColumnStyle: React.CSSProperties = {
+    width: '24rem',
+    marginLeft: '2rem',
+  };
+
+  const feedbackButtonStyle: React.CSSProperties = {
+    backgroundColor: '#9333ea', // purple-600
+    color: 'white',
+    padding: '0.5rem 1rem',
+    borderRadius: '0.375rem',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+  };
+
   return (
-    <div className="p-8 flex">
+    <div style={containerStyle}>
       {/* ───────── Left column ───────── */}
-      <div className="flex-1">
-        {/* Header row */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Daily + Firebase Video Call</h1>
-          <AuthButtons />                 {/* login / register / logout */}
+      <div style={leftColumnStyle}>
+        {/* Header */}
+        <div style={headerStyle}>
+          <h1 style={headingStyle}>Daily + Firebase Video Call</h1>
+          <div style={buttonGroupStyle}>
+            <AuthButtons />
+          </div>
         </div>
 
-        {/* Teacher action buttons */}
-        <div className="space-x-4 mb-6">
+        {/* Action buttons */}
+        <div style={buttonGroupStyle}>
           <Link
             to="/create-quiz"
-            className="inline-block px-4 py-2 bg-blue-600 text-white rounded"
+            style={{
+              ...linkStyle,
+              backgroundColor: '#2563eb', // blue-600
+            }}
           >
             Create Quiz
           </Link>
 
           <Link
             to="/session/test123"
-            className="inline-block px-4 py-2 bg-green-600 text-white rounded"
+            style={{
+              ...linkStyle,
+              backgroundColor: '#16a34a', // green-600
+            }}
           >
             Jump to Quiz Demo
           </Link>
@@ -47,19 +114,16 @@ const App: React.FC = () => {
           <VideoCall
             roomUrl={roomUrl}
             sessionId={sessionId}
-            isTeacher={true}            // show quiz-launch panel
+            isTeacher={true} // Show quiz-launch panel
           />
         )}
       </div>
 
       {/* ───────── Right column (feedback) ───────── */}
       {roomUrl && (
-        <div className="w-96 ml-8">
+        <div style={rightColumnStyle}>
           {!showFeedback ? (
-            <button
-              className="bg-purple-600 text-white px-4 py-2 rounded"
-              onClick={() => setShowFeedback(true)}
-            >
+            <button style={feedbackButtonStyle} onClick={() => setShowFeedback(true)}>
               Give Feedback
             </button>
           ) : (
