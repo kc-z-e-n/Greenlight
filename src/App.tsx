@@ -30,7 +30,6 @@ const AppHome: React.FC = () => {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  const sessionId = 'session_abc';
   const handleSelectRoom = (url: string) => {
     // encode the URL so it can safely go in the URL path
     const encodedUrl = encodeURIComponent(url);

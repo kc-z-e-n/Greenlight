@@ -17,7 +17,6 @@ import VideoCall from './VideoCall';
 const VideoCallWrapper: React.FC = () => {
   const { user } = useAuth();
   const { roomUrl } = useParams<{ roomUrl: string }>();
-  const sessionId = 'session_abc'; // or get this dynamically if needed
 
   if (!roomUrl) return <div>No room selected</div>;
 
@@ -27,7 +26,6 @@ const VideoCallWrapper: React.FC = () => {
     <div >
       <VideoCall 
         roomUrl={decodedRoomUrl} 
-        sessionId={sessionId} 
         isTeacher={user?.role === 'teacher'} 
       />
     </div>
