@@ -1,13 +1,18 @@
+// AuthButtons.tsx
 import { Link } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 
-const AuthButtons: React.FC = () => {
+interface AuthButtonsProps {
+  darkMode: boolean;
+}
+
+const AuthButtons: React.FC<AuthButtonsProps> = ({ darkMode }) => {
   const { user, logout } = useAuth();
 
   const containerStyle: React.CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: '1rem', // roughly equivalent to Tailwind's gap-4
+    gap: '1rem',
   };
 
   const buttonStyle: React.CSSProperties = {
@@ -18,17 +23,24 @@ const AuthButtons: React.FC = () => {
     border: 'none',
   };
 
+  const textStyle: React.CSSProperties = {
+    fontSize: '0.875rem',
+    fontStyle: 'italic',
+    whiteSpace: 'nowrap',
+    color: darkMode ? '#e5e7eb' : '#374151', // gray-200 : gray-700
+  };
+
   if (user) {
     return (
       <div style={containerStyle}>
-        <span style={{ fontSize: '0.875rem', fontStyle: 'italic', whiteSpace: 'nowrap' }}>
+        <span style={textStyle}>
           {user.email} ({user.role})
         </span>
         <button
           onClick={logout}
           style={{
             ...buttonStyle,
-            backgroundColor: '#ef4444', // Tailwind's red-500
+            backgroundColor: '#ef4444', // red-500
             color: 'white',
           }}
         >
@@ -44,9 +56,10 @@ const AuthButtons: React.FC = () => {
         to="/login"
         style={{
           ...buttonStyle,
-          border: '1px solid #ccc',
+          border: `1px solid ${darkMode ? '#4b5563' : '#ccc'}`, // gray-600 : #ccc
           textDecoration: 'none',
-          color: 'black',
+          color: darkMode ? '#f9fafb' : '#000000', // gray-50 : black
+          backgroundColor: darkMode ? '#374151' : 'transparent', // gray-700 : transparent
         }}
       >
         Login
@@ -55,7 +68,7 @@ const AuthButtons: React.FC = () => {
         to="/register"
         style={{
           ...buttonStyle,
-          backgroundColor: '#2563eb', // Tailwind's blue-600
+          backgroundColor: '#2563eb', // blue-600
           color: 'white',
           textDecoration: 'none',
         }}
