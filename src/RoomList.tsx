@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+  import React, { useEffect, useState } from "react";
   import { onValue, ref } from "firebase/database";
   import { database } from "./firebase";
 
@@ -27,14 +27,14 @@ import React, { useEffect, useState } from "react";
     // Call Daily.co API to check if the room is currently active/occupied
     const checkRoomOccupied = async (roomName: string): Promise<boolean> => {
       try {
-        const response = await fetch( https://api.daily.co/v1/meetings?room=${roomName}&ongoing=true, {
+        const response = await fetch( `https://api.daily.co/v1/meetings?room=${roomName}&ongoing=true`, {
           headers: {
-            Authorization: Bearer ${DAILY_API_KEY},
+            Authorization: `Bearer ${DAILY_API_KEY}`,
           },
         });
 
         if (!response.ok) {
-          console.warn(Failed to fetch room status for ${roomName});
+          console.warn(`Failed to fetch room status for ${roomName}`);
           return false;
         }
 

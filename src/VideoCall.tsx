@@ -16,7 +16,7 @@ const VideoCall: React.FC<Props> = ({ roomUrl }) => {
       showLeaveButton: true,
       iframeStyle: {
         width: '100%',
-        height: '600px',
+        height: '800px',
         border: '0',
       },
     });
@@ -36,7 +36,7 @@ const VideoCall: React.FC<Props> = ({ roomUrl }) => {
     };
   }, [roomUrl]);
 
-  return <div id="video-container" />;
+  return <div id="video-container"  />;
 };
 
 export default VideoCall;
