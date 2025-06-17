@@ -1,35 +1,17 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Link } from 'react-router-dom';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => (
+  <div className="p-8">
+    <h1 className="text-3xl mb-6">Welcome to EduCollab</h1>
+    <div className="space-x-4">
+      <Link to="/create-session" className="bg-blue-600 text-white px-4 py-2 rounded">
+        Create Session
+      </Link>
+      <Link to="/join-session" className="bg-green-600 text-white px-4 py-2 rounded">
+        Join Session
+      </Link>
+    </div>
+  </div>
+);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
-
-export default App
+export default App;
