@@ -1,16 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
-import App from './App';
+import { BrowserRouter, Routes, Route, useParams, Navigate } from 'react-router-dom';
+import AppHome from './App';
 import Whiteboard from './pages/Whiteboard';
-import SessionRoom from './pages/SessionRoom';
+import SessionRoom from './pages/SessionRoom';          
+import './index.css';  
 import CreateQuizForm from './pages/CreateQuizForm';
 import AuthPage from './pages/AuthPage';
+import { AuthProvider, useAuth } from './AuthContext'; 
 import CreateClass from './pages/CreateClass';
 import AddStudentToClass from './pages/AddStudentToClass';
-import VideoCall from './VideoCall';          // import your VideoCall component
-import { AuthProvider, useAuth } from './AuthContext'; 
-import './index.css';
+import ClassPage from './pages/ClassPage';
+import VideoCall from './VideoCall';
 
 // Wrapper for VideoCall route to extract params and auth info
 const VideoCallWrapper: React.FC = () => {
@@ -37,7 +38,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <Routes>
           {/* Landing page = Daily video demo */}
-          <Route path="/" element={<App />} />
+          <Route path="/" element={<AppHome />} />
           <Route path="/whiteboard" element={<Whiteboard />} />
 
           {/* Quiz room  */}
@@ -53,6 +54,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
           {/* fallback route */}
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/class/:classId/*"   element={<ClassPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

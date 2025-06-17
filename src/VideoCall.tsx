@@ -1,76 +1,95 @@
+// src/VideoCall.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import DailyIframe from '@daily-co/daily-js';
 import type { DailyCall } from '@daily-co/daily-js';
-
-import { database } from './firebase';                       // ← your Firebase setup
 import { ref, set } from 'firebase/database';
 
-interface Props {
-  roomUrl: string;
-  sessionId: string;    // e.g. "session_abc"
-  isTeacher?: boolean;  // show quiz controls only for host
+import { database } from './firebase';
+import { useAuth } from './AuthContext';
+
+/* ──────────────────── Types ──────────────────── */
+interface VideoCallProps {
+  roomUrl: string;                 // Daily room URL
+  sessionId: string;               // Fallback quiz session id
+  isTeacher?: boolean;             // host flag
+  classId?: string;                // Optional: class key (preferred for quizzes)
 }
 
-const VideoCall: React.FC<Props> = ({ roomUrl, sessionId, isTeacher = false }) => {
-  const callFrameRef = useRef<DailyCall | null>(null);
+/* ──────────────────── Component ──────────────────── */
+  const VideoCall: React.FC<VideoCallProps> = ({
+    roomUrl,
+    sessionId,
+    isTeacher = false,
+    classId,
+  }) => {
+    const { user } = useAuth();
+    const callFrameRef = useRef<DailyCall | null>(null); // keep Daily instance
+    const [quizId, setQuizId] = useState('');            // text box state
 
-  /* ─── Quiz-control local state ─── */
-  const [questionId, setQuestionId] = useState('');
+  /* ────────────── Effect: mount Daily iframe ────────────── */
+    useEffect(() => {
+      const setupCall = async () => {
+        const frame = DailyIframe.createFrame({
+          showLeaveButton: true,
+          iframeStyle: {
+            width: '100%',
+            height: '600px',
+            border: '0',
+            borderRadius: '0.5rem',
+          },
+        });
 
+        frame.join({ url: roomUrl });
+        callFrameRef.current = frame;
+
+        const container = document.getElementById('video-container');
+        const iframeEl = frame.iframe;
+        if (container && iframeEl instanceof HTMLIFrameElement) {
+          container.innerHTML = '';
+          container.appendChild(iframeEl);
+        }
+      };
+
+      setupCall(); // Call the async function
+
+      return () => {
+        callFrameRef.current?.leave();
+      };
+    }, [roomUrl]);
+
+  /* ────────────── Teacher: launch quiz ────────────── */
   const launchQuiz = async () => {
-    if (!questionId) return alert('Enter a question id (e.g. q1)');
-    await set(ref(database, `quizzes/${sessionId}/activeQuiz`), questionId);
-    alert(`Quiz “${questionId}” launched!`);
-    setQuestionId('');
+    if (!quizId.trim()) return alert('Enter a quiz id first!');
+    const path = classId
+      ? `classes/${classId}/activeQuiz`
+      : `quizzes/${sessionId}/activeQuiz`;
+    await set(ref(database, path), quizId.trim());
+    alert(`Quiz "${quizId}" launched!`);
+    setQuizId('');
   };
 
-  /* ─── Daily video set-up ─── */
-useEffect(() => {
-  const setup = async () => {
-    const frame = DailyIframe.createFrame({
-      showLeaveButton: true,
-      iframeStyle: { width: '100%', height: '600px', border: '0' },
-    });
-
-    await frame.join({ url: roomUrl });
-    callFrameRef.current = frame;
-
-    const container = document.getElementById('video-container');
-    const iframeEl = frame.iframe;
-    if (container && iframeEl instanceof HTMLIFrameElement) {
-      container.innerHTML = '';
-      container.appendChild(iframeEl);
-    }
-  };
-
-  setup(); // run the async setup
-
-  return () => {
-    callFrameRef.current?.leave();
-  };
-}, [roomUrl]);
-
+  /* ──────────────────── Render ──────────────────── */
   return (
     <div className="relative">
-      {/* Daily iframe mounts here */}
       <div id="video-container" />
 
-      {/* ─── Teacher-only quiz control panel ─── */}
+      {/* Teacher bottom bar */}
       {isTeacher && (
-        <div className="absolute top-4 right-4 w-56 bg-white rounded shadow p-4 space-y-2">
-          <h3 className="font-semibold text-sm">Quiz Control</h3>
-          <input
-            className="border p-1 w-full text-sm"
-            placeholder="question id (e.g. q1)"
-            value={questionId}
-            onChange={e => setQuestionId(e.target.value)}
-          />
-          <button
-            onClick={launchQuiz}
-            className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-1 rounded"
-          >
-            Start Quiz
-          </button>
+        <div className="absolute inset-x-0 bottom-0 flex justify-center p-4 bg-white/80 backdrop-blur">
+          <div className="flex items-center gap-2">
+            <input
+              className="border px-2 py-1 text-sm rounded"
+              value={quizId}
+              onChange={(e) => setQuizId(e.target.value)}
+              placeholder="quiz id (e.g. q1)"
+            />
+            <button
+              className="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded"
+              onClick={launchQuiz}
+            >
+              Start Quiz
+            </button>
+          </div>
         </div>
       )}
     </div>

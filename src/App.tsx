@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link , useNavigate} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import RoomList from './RoomList';
 import VideoCall from './VideoCall';
 import PeerFeedbackFlow from './PeerFeedbackFlow';
 import AuthButtons from './components/AuthButtons';
 import ClassList from './components/ClassList';
 import { useAuth } from './AuthContext';
+import CreateClass from './pages/CreateClass';
+import AddStudentToClass from './pages/AddStudentToClass';
+import CreateQuizForm from './pages/CreateQuizForm';
+import SessionRoom from './pages/SessionRoom';
+import ClassPage from './pages/ClassPage'; // ← make sure this exists
 
-const App: React.FC = () => {
+const AppHome: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [roomUrl, setRoomUrl] = useState<string | null>(null);
@@ -159,4 +165,5 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+
+export default AppHome;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ref, get } from 'firebase/database';
 import { database } from '../firebase';
 import { useAuth } from '../AuthContext';
+import { Link } from 'react-router-dom';
 
 interface ClassItem { 
   id: string; 
@@ -46,22 +47,27 @@ const ClassList: React.FC<ClassListProps> = ({ darkMode }) => {
 
   return (
     <div className="mb-6">
-      <h2 
-        className="font-semibold mb-2"
-        style={{ color: darkMode ? '#f9fafb' : '#111827' }} // gray-50 : gray-900
-      >
-        Your classes
-      </h2>
-      <ul className="list-disc list-inside">
-        {list.map((c) => (
-          <li 
-            key={c.id}
-            style={{ color: darkMode ? '#d1d5db' : '#374151' }} // gray-300 : gray-700
-          >
+<h2
+  className="font-semibold mb-2"
+  style={{ color: darkMode ? '#f9fafb' : '#111827' }} // gray-50 : gray-900
+>
+  Your classes
+    </h2>
+    <ul className="list-disc list-inside space-y-1">
+    {list.map((c) => (
+        <li
+        key={c.id}
+        style={{ color: darkMode ? '#d1d5db' : '#374151' }} // gray-300 : gray-700
+        >
+        <Link
+            to={`/class/${c.id}`}
+            className="text-blue-600 hover:underline"
+        >
             {c.name}
-          </li>
-        ))}
-      </ul>
+        </Link>
+        </li>
+    ))}
+    </ul>
     </div>
   );
 };
