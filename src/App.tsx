@@ -6,129 +6,92 @@ import RoomList from './RoomList';
 import VideoCall from './VideoCall';
 import PeerFeedbackFlow from './PeerFeedbackFlow';
 import AuthButtons from './components/AuthButtons';
-import ClassList from './components/ClassList';
+import ClassList from './components/ClassList';       // ★ new
 import { useAuth } from './AuthContext';
 
 const App: React.FC = () => {
-  const { user } = useAuth();                         // know the role
+  const { user } = useAuth();                         // know role
   const [roomUrl, setRoomUrl] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
 
-  const sessionId = 'session_abc'; // Reuse for quiz launcher panel
-
+  const sessionId = 'session_abc';
   const handleSelectRoom = (url: string) => setRoomUrl(url);
 
-  const containerStyle: React.CSSProperties = {
+  /* ── simple inline styles to match your current aesthetic ── */
+  const container: React.CSSProperties = {
     display: 'flex',
     padding: '2rem',
     minHeight: '100vh',
-    alignItems: 'flex-start',
     backgroundColor: '#f9fafb',
     fontFamily: 'Arial, sans-serif',
   };
-
-  const leftColumnStyle: React.CSSProperties = {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1.5rem',
-    marginBottom: '1.5rem',
-  };
-
-  const headerStyle: React.CSSProperties = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  };
-
-  const headingStyle: React.CSSProperties = {
-    fontSize: '2rem',
-    fontWeight: 'bold',
-    margin: 0,
-  };
-
-  const buttonGroupStyle: React.CSSProperties = {
-    display: 'flex',
-    gap: '1rem',
-  };
-
-  const linkStyle: React.CSSProperties = {
+  const leftCol: React.CSSProperties = { flex: 1, display: 'flex', flexDirection: 'column', gap: '1.5rem' };
+  const header: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
+  const h1: React.CSSProperties = { fontSize: '2rem', fontWeight: 'bold', margin: 0 };
+  const btnStack: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '0.75rem' };
+  const btn = (bg: string): React.CSSProperties => ({
+    backgroundColor: bg,
+    color: 'white',
+    textAlign: 'center',
     padding: '0.5rem 1rem',
     borderRadius: '0.375rem',
-    color: 'white',
+    textDecoration: 'none',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+  });
+  const outlineBtn: React.CSSProperties = {
+    border: '1px solid #4b5563',
+    color: '#374151',
+    textAlign: 'center',
+    padding: '0.5rem 1rem',
+    borderRadius: '0.375rem',
     textDecoration: 'none',
     fontSize: '0.875rem',
     fontWeight: 500,
   };
-
-  const rightColumnStyle: React.CSSProperties = {
-    width: '24rem',
-    marginLeft: '2rem',
-  };
-
-  const feedbackButtonStyle: React.CSSProperties = {
-    backgroundColor: '#9333ea', // purple-600
-    color: 'white',
-    padding: '0.5rem 1rem',
-    borderRadius: '0.375rem',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '0.875rem',
-    fontWeight: 500,
-  };
+  const rightCol: React.CSSProperties = { width: '24rem', marginLeft: '2rem' };
+  const feedbackBtn: React.CSSProperties = btn('#9333ea');
 
   return (
-    <div style={containerStyle}>
+    <div style={container}>
       {/* ───────── Left column ───────── */}
-      <div style={leftColumnStyle}>
-        {/* Header */}
-        <div style={headerStyle}>
-          <h1 style={headingStyle}>Daily + Firebase Video Call</h1>
-          <div style={buttonGroupStyle}>
-            <AuthButtons />
+      <div style={leftCol}>
+        {/* header */}
+        <div style={header}>
+          <h1 style={h1}>Daily + Firebase Video Call</h1>
+          <AuthButtons />
+        </div>
+
+        {/* teacher-only actions */}
+        {user?.role === 'teacher' && (
+          <div style={btnStack}>
+            <Link to="/create-class" style={btn('#7c3aed')}>Create Class</Link>
+            <Link to="/add-student"  style={outlineBtn}>Add Student</Link>
+            <Link to="/create-quiz"  style={btn('#2563eb')}>Create Quiz</Link>
+            <Link to="/session/test123" style={btn('#16a34a')}>Jump to Quiz Demo</Link>
           </div>
-        </div>
+        )}
 
-        {/* Action buttons */}
-        <div style={buttonGroupStyle}>
-          <Link
-            to="/create-quiz"
-            style={{
-              ...linkStyle,
-              backgroundColor: '#2563eb', // blue-600
-            }}
-          >
-            Create Quiz
-          </Link>
+        {/* list the classes this user belongs to */}
+        <ClassList />
 
-          <Link
-            to="/session/test123"
-            style={{
-              ...linkStyle,
-              backgroundColor: '#16a34a', // green-600
-            }}
-          >
-            Jump to Quiz Demo
-          </Link>
-        </div>
-
-        {/* room selector or active call */}
+        {/* room selector OR active call */}
         {!roomUrl ? (
           <RoomList onSelectRoom={handleSelectRoom} />
         ) : (
           <VideoCall
             roomUrl={roomUrl}
             sessionId={sessionId}
-            isTeacher={true} // Show quiz-launch panel
+            isTeacher={user?.role === 'teacher'}
           />
         )}
       </div>
 
-      {/* ──────────────────────── Right column ──────────────────────── */}
+      {/* ───────── Right column ───────── */}
       {roomUrl && (
-        <div style={rightColumnStyle}>
+        <div style={rightCol}>
           {!showFeedback ? (
-            <button style={feedbackButtonStyle} onClick={() => setShowFeedback(true)}>
+            <button style={feedbackBtn} onClick={() => setShowFeedback(true)}>
               Give Feedback
             </button>
           ) : (
