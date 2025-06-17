@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PostItNote from '../components/PostItNote';
+import WhiteboardCanvas from '../components/WhiteboardCanvas';
 
 type Note = {
   id: number;
@@ -24,6 +25,8 @@ const Whiteboard: React.FC = () => {
   return (
     <div className="whiteboard">
       <h1>Whiteboard</h1>
+
+      <WhiteboardCanvas />
 
       <div className="new-note-input">
         <input
