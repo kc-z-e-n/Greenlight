@@ -1,142 +1,95 @@
-import React, { useEffect, useState } from "react";
-import { onValue, ref } from "firebase/database";
-import { database } from "./firebase";
+// RoomList.tsx  — now falls back to the class's own roomUrl
+import React, { useEffect, useState } from 'react';
+import {
+  getDatabase,
+  ref,
+  onValue,
+  get,
+  child,
+} from 'firebase/database';
 
 interface Room {
+  id: string;
+  name: string;
   url: string;
+  classId?: string;
 }
 
-interface RoomWithStatus extends Room {
-  isOccupied: boolean;
-}
-
-interface RoomListProps {
+interface Props {
   onSelectRoom: (url: string) => void;
   darkMode: boolean;
+  classId?: string;          // optional class filter
 }
 
-// * WARNING *
-// Exposing your API key here is a security risk.
-// Replace with your actual Daily.co API key:
-const DAILY_API_KEY = "a6996420daac41a5ce1562edb41ec8b6b982ddceaad91fe32dc43ecd44a207b3";
-
-const RoomList: React.FC<RoomListProps> = ({ onSelectRoom, darkMode }) => {
-  const [rooms, setRooms] = useState<Record<string, RoomWithStatus> | null>(null);
+const RoomList: React.FC<Props> = ({ onSelectRoom, darkMode, classId }) => {
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
-  console.log("here")
 
-  // Call Daily.co API to check if the room is currently active/occupied
-  const checkRoomOccupied = async (roomName: string): Promise<boolean> => {
-    try {
-      const response = await fetch( `https://api.daily.co/v1/meetings?room=${roomName}&ongoing=true`, {
-        headers: {
-          Authorization: `Bearer ${DAILY_API_KEY}`,
-        },
-      });
-      console.log("here3")
-
-      if (!response.ok) {
-        console.warn(`Failed to fetch room status for ${roomName}`);
-        return false;
-      }
-
-      const data = await response.json();
-      console.log("data", data.data);
-
-      // Check if room has active participants or session is active
-      // This depends on Daily.co response structure
-      return data.data.length > 0
-    } catch (error) {
-      console.error("Error fetching room status:", error);
-      return false;
-    }
-  };
-
+  /* ───────── Live listener on /rooms ───────── */
   useEffect(() => {
-    const roomsRef = ref(database, "\"rooms\"");
-    const unsubscribe = onValue(roomsRef, async (snapshot) => {
-      const data: Record<string, Room> | null = snapshot.val();
-      if (!data) {
-        setRooms(null);
-        setLoading(false);
-        return;
-      }
+    const db = getDatabase();
+    const roomsRef = ref(db, 'rooms');
+    const off = onValue(
+      roomsRef,
+      snap => {
+        if (!snap.exists()) {
+          setRooms([]);
+          return;
+        }
+        const raw = snap.val();
+        const list: Room[] = Object.keys(raw).map(id => ({ id, ...raw[id] }));
+        const filtered = classId ? list.filter(r => r.classId === classId) : list;
+        setRooms(filtered);
+      },
+      { onlyOnce: false }
+    );
+    return () => off();
+  }, [classId]);
 
-      // For each room, check if occupied by calling Daily API
-      const roomsWithStatus: Record<string, RoomWithStatus> = {};
-      await Promise.all(
-        Object.entries(data).map(async ([roomId, room]) => {
-          const roomNameFromUrl = room.url.trim().split('/').pop() || roomId;
-          const isOccupied = await checkRoomOccupied(roomNameFromUrl);
-          roomsWithStatus[roomId] = { ...room, isOccupied };
-        })
-      );
-
-      setRooms(roomsWithStatus);
+  /* ───────── One-time fallback: class/{classId}/roomUrl ───────── */
+  useEffect(() => {
+    if (!classId) {
       setLoading(false);
-    });
+      return;
+    }
+    const fetchFallback = async () => {
+      const db = getDatabase();
+      const snap = await get(child(ref(db), `classes/${classId}/roomUrl`));
+      if (snap.exists()) {
+        setRooms([
+          {
+            id: classId,
+            name: 'Class Room',
+            url: snap.val(),
+            classId,
+          },
+        ]);
+      }
+      setLoading(false);
+    };
+    fetchFallback();
+  }, [classId]);
 
-    return () => unsubscribe();
-  }, []);
+  if (loading) return <p className="text-gray-500">Loading…</p>;
 
-  const containerStyle: React.CSSProperties = {
-    backgroundColor: darkMode ? '#1f2937' : '#ffffff', // gray-800 : white
-    color: darkMode ? '#f9fafb' : '#111827', // gray-50 : gray-900
-    padding: '1rem',
-    borderRadius: '0.5rem',
-  };
-
-  const listItemStyle: React.CSSProperties = {
-    cursor: "pointer",
-    padding: '0.5rem',
-    margin: '0.25rem 0',
-    borderRadius: '0.25rem',
-    backgroundColor: darkMode ? '#374151' : '#f3f4f6', // gray-700 : gray-100
-    color: darkMode ? '#e5e7eb' : '#374151', // gray-200 : gray-700
-    transition: 'background-color 0.2s',
-  };
-
-  if (loading) return (
-    <p style={{ color: darkMode ? '#9ca3af' : '#6b7280' }}>
-      Loading rooms...
-    </p>
-  );
-  
-  if (!rooms) return (
-    <p style={{ color: darkMode ? '#9ca3af' : '#6b7280' }}>
-      No rooms found
-    </p>
-  );
+  if (rooms.length === 0)
+    return (
+      <p style={{ color: darkMode ? '#9ca3af' : '#6b7280' }}>
+        No active rooms.
+      </p>
+    );
 
   return (
-    <div style={containerStyle}>
-      <h2 style={{ 
-        marginBottom: '1rem',
-        color: darkMode ? '#f9fafb' : '#111827',
-        fontWeight: 'bold'
-      }}>
-        Available Rooms
-      </h2>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {Object.entries(rooms).map(([id, room]) => (
-          <li 
-            key={id} 
-            onClick={() => onSelectRoom(room.url)} 
-            style={listItemStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = darkMode ? '#4b5563' : '#e5e7eb';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = darkMode ? '#374151' : '#f3f4f6';
-            }}
-          >
-            {id} {room.isOccupied ? 
-              <span style={{ color: '#ef4444' }}>(Occupied)</span> : 
-              <span style={{ color: '#10b981' }}>(Available)</span>
-            }
-          </li>
-        ))}
-      </ul>
+    <div className="space-y-2">
+      {rooms.map(r => (
+        <button
+          key={r.id}
+          onClick={() => onSelectRoom(r.url)}
+          className="w-full px-4 py-2 text-left bg-gray-200 hover:bg-gray-300 rounded"
+        >
+          {r.name}
+        </button>
+      ))}
     </div>
   );
 };
