@@ -8,6 +8,8 @@ import './index.css';
 import CreateQuizForm from './pages/CreateQuizForm';
 import AuthPage from './pages/AuthPage';
 import { AuthProvider } from './AuthContext'; 
+import CreateClass from './pages/CreateClass';
+import AddStudentToClass from './pages/AddStudentToClass';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -23,6 +25,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/create-quiz" element={<CreateQuizForm />} />
         <Route path="/login" element={<AuthPage />} />
         <Route path="/register" element={<AuthPage />} />
+        <Route path="/create-class" element={<CreateClass />} />
+        <Route path="/add-student" element={<AddStudentToClass />} />
       </Routes>
     </BrowserRouter>
     </AuthProvider>

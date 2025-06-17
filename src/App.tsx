@@ -1,11 +1,16 @@
+// src/App.tsx
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+
 import RoomList from './RoomList';
 import VideoCall from './VideoCall';
 import PeerFeedbackFlow from './PeerFeedbackFlow';
-import { Link } from 'react-router-dom';
 import AuthButtons from './components/AuthButtons';
+import ClassList from './components/ClassList';
+import { useAuth } from './AuthContext';
 
 const App: React.FC = () => {
+  const { user } = useAuth();                         // know the role
   const [roomUrl, setRoomUrl] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
 
@@ -107,7 +112,7 @@ const App: React.FC = () => {
           </Link>
         </div>
 
-        {/* Video-call or room selector */}
+        {/* room selector or active call */}
         {!roomUrl ? (
           <RoomList onSelectRoom={handleSelectRoom} />
         ) : (
@@ -119,7 +124,7 @@ const App: React.FC = () => {
         )}
       </div>
 
-      {/* ───────── Right column (feedback) ───────── */}
+      {/* ──────────────────────── Right column ──────────────────────── */}
       {roomUrl && (
         <div style={rightColumnStyle}>
           {!showFeedback ? (
