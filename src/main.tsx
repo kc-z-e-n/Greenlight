@@ -13,7 +13,7 @@ import AddStudentToClass from './pages/AddStudentToClass';
 import ClassPage from './pages/ClassPage';
 import VideoCall from './VideoCall';
 
-// Wrapper for VideoCall route to extract params and auth info
+// Wrapper for VideoCall route with proper full-screen layout
 const VideoCallWrapper: React.FC = () => {
   const { user } = useAuth();
   const { roomUrl } = useParams<{ roomUrl: string }>();
@@ -24,11 +24,13 @@ const VideoCallWrapper: React.FC = () => {
   const decodedRoomUrl = decodeURIComponent(roomUrl);
 
   return (
-    <VideoCall 
-      roomUrl={decodedRoomUrl} 
-      sessionId={sessionId} 
-      isTeacher={user?.role === 'teacher'} 
-    />
+    <div >
+      <VideoCall 
+        roomUrl={decodedRoomUrl} 
+        sessionId={sessionId} 
+        isTeacher={user?.role === 'teacher'} 
+      />
+    </div>
   );
 };
 
@@ -40,19 +42,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           {/* Landing page = Daily video demo */}
           <Route path="/" element={<AppHome />} />
           <Route path="/whiteboard" element={<Whiteboard />} />
-
-          {/* Quiz room  */}
           <Route path="/session/:sessionId" element={<SessionRoom />} />
           <Route path="/create-quiz" element={<CreateQuizForm />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
           <Route path="/create-class" element={<CreateClass />} />
           <Route path="/add-student" element={<AddStudentToClass />} />
-
-          {/* New Video Call route */}
+          
+          {/* Full-screen video call route */}
           <Route path="/video-call/:roomUrl" element={<VideoCallWrapper />} />
-
-          {/* fallback route */}
+          
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/class/:classId/*"   element={<ClassPage />} />
         </Routes>
