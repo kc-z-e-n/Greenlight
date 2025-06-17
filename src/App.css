@@ -40,3 +40,11 @@
 .read-the-docs {
   color: #888;
 }
+
+.app-wrapper {
+  min-height: 100vh;
+  background-color: #f8f9fa; /* light gray */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
