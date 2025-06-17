@@ -1,96 +1,3 @@
-/*import React, { useRef, useEffect, useState } from 'react';
-
-const WhiteboardCanvas: React.FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [drawing, setDrawing] = useState(false);
-  const [mode, setMode] = useState<'draw' | 'erase'>('draw');
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = 400;
-
-    ctx.lineWidth = 5;
-    ctx.lineCap = 'round';
-
-    const getMousePos = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
-    };
-
-    const startDrawing = (e: MouseEvent) => {
-      const { x, y } = getMousePos(e);
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      setDrawing(true);
-    };
-
-    const draw = (e: MouseEvent) => {
-      if (!drawing) return;
-      const { x, y } = getMousePos(e);
-
-      if (mode === 'draw') {
-        ctx.strokeStyle = '#000'; // black ink
-        ctx.globalCompositeOperation = 'source-over'; // normal drawing
-      } else {
-        ctx.strokeStyle = 'rgba(0,0,0,1)';
-        ctx.globalCompositeOperation = 'destination-over'; 
-      }
-
-      ctx.lineTo(x, y);
-      ctx.stroke();
-    };
-
-    const stopDrawing = () => {
-      setDrawing(false);
-    };
-
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseout', stopDrawing);
-
-    return () => {
-      canvas.removeEventListener('mousedown', startDrawing);
-      canvas.removeEventListener('mousemove', draw);
-      canvas.removeEventListener('mouseup', stopDrawing);
-      canvas.removeEventListener('mouseout', stopDrawing);
-    };
-  }, [drawing, mode]);
-
-  return (
-    <div style={{ textAlign: 'center' }}>
-      <div style={{ marginBottom: '1rem' }}>
-        <button onClick={() => setMode('draw')} style={{ marginRight: '0.5rem' }}>
-          ✏️ Draw Mode
-        </button>
-        <button onClick={() => setMode('erase')}>🧽 Erase Mode</button>
-      </div>
-
-      <canvas
-        ref={canvasRef}
-        style={{
-          border: '2px solid #ccc',
-          backgroundColor: '#fff',
-          display: 'block',
-          margin: '0 auto',
-          cursor: mode === 'erase' ? 'crosshair' : 'pointer',
-        }}
-      />
-    </div>
-  );
-};
-
-export default WhiteboardCanvas;*/
-
 import React, { useRef, useEffect, useState } from 'react';
 import { getDatabase, ref, push, onChildAdded } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
@@ -130,24 +37,42 @@ const WhiteboardCanvas: React.FC = () => {
     canvas.width = window.innerWidth;
     canvas.height = 400;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.lineWidth = 5;
-    ctx.lineCap = 'round';
-
-    // Draw all strokes
-    strokes.forEach((stroke) => {
+    const drawStroke = (stroke: Stroke) => {
       ctx.beginPath();
       stroke.path.forEach((point, index) => {
-        if (index === 0) {
-          ctx.moveTo(point.x, point.y);
-        } else {
-          ctx.lineTo(point.x, point.y);
-        }
+        if (index === 0) ctx.moveTo(point.x, point.y);
+        else ctx.lineTo(point.x, point.y);
       });
       ctx.strokeStyle = '#000';
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    };
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    strokes.forEach(drawStroke);
+  }, [strokes]);
+
+  const drawLivePath = (path: Point[]) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    if (!canvas ||!ctx || path.length < 2) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    strokes.forEach((s) => {
+      ctx.beginPath();
+      s.path.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
       ctx.stroke();
     });
-  }, [strokes]);
+
+    ctx.beginPath();
+    path.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+    ctx.strokeStyle = 'blue';
+    ctx.stroke();
+  };
 
   const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current!;
@@ -164,31 +89,34 @@ const WhiteboardCanvas: React.FC = () => {
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!drawing) return;
     const pos = getMousePos(e);
-    setCurrentPath((prev) => [...prev, pos]);
+    const updated = [...currentPath, pos];
+    setCurrentPath(updated);
+    drawLivePath(updated);
   };
 
   const handleMouseUp = () => {
     setDrawing(false);
     if (currentPath.length > 1 && user) {
+      const strokeRef = push(ref(db, 'strokes'));
       const newStroke: Stroke = {
-        id: push(ref(db, 'strokes')).key!,
+        id: strokeRef.key!,
         path: currentPath,
         userId: user.uid,
         timestamp: Date.now(),
       };
       push(ref(db, 'strokes'), newStroke);
-      setCurrentPath([]);
     }
+    setCurrentPath([]);
   };
 
   return (
-    <div>
-      <h2>Whiteboard</h2>
+    <div className="canvas-container">
       <canvas
         ref={canvasRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
         style={{
           border: '2px solid #ccc',
           backgroundColor: '#fff',
@@ -201,4 +129,3 @@ const WhiteboardCanvas: React.FC = () => {
 };
 
 export default WhiteboardCanvas;
-
