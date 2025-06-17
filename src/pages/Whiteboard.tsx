@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PostItNote from '../components/PostItNote';
 import WhiteboardCanvas from '../components/WhiteboardCanvas';
+import './Whiteboard.css';
 
 type Note = {
   id: number;
@@ -23,10 +24,12 @@ const Whiteboard: React.FC = () => {
   };
 
   return (
-    <div className="whiteboard">
-      <h1>Whiteboard</h1>
+    <div className="whiteboard-page">
+      <div className="whiteboard-label">Whiteboard</div>
 
       <WhiteboardCanvas />
+
+      <div className="discussion-divider">DISCUSSION</div>
 
       <div className="new-note-input">
         <input
