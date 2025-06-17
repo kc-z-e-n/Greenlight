@@ -32,6 +32,7 @@
             Authorization: `Bearer ${DAILY_API_KEY}`,
           },
         });
+        console.log("here3")
 
         if (!response.ok) {
           console.warn(`Failed to fetch room status for ${roomName}`);
