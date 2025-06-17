@@ -4,11 +4,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App';
 import Whiteboard from './pages/Whiteboard';
 import SessionRoom from './pages/SessionRoom';          
-
 import './index.css';  
+import CreateQuizForm from './pages/CreateQuizForm';
+import AuthPage from './pages/AuthPage';
+import { AuthProvider } from './AuthContext'; 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+    <AuthProvider> 
     <BrowserRouter>
       <Routes>
         {/* Landing page = Daily video demo */}
@@ -17,7 +20,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
         {/* Quiz room  */}
         <Route path="/session/:sessionId" element={<SessionRoom />} />
+        <Route path="/create-quiz" element={<CreateQuizForm />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/register" element={<AuthPage />} />
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>
 );
