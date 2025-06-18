@@ -1,3 +1,70 @@
+# Project : Greenlight
+---
+### Team name : Chat seek
+### Team ID : 34
+---
+## Chosen problem statement:
+ Theme 2 Problem statement 2
+
+---
+Greenlight is a remote learning app that enables remote user learning. Emphasis on collaborative tools serve to enable the human touch during remote sessions.
+
+---
+## Project details
+
+The functions built into greenlight seeks to create an interactive environment, the features included can be summarised below
+- User registration
+- User login
+- Breakout Room creation (accessible only by teacher accounts)
+- Video call hosting (accessible only by teacher accounts)
+- Video conferencing
+- Live quizzes
+- Post lesson peer feedback
+
+## Built with:
+
+## How we built it
+Frontend: React + TypeScript with Vite for fast development.
+
+Styling: TailwindCSS to build clean UI components quickly.
+
+Video Calls: Daily.co's prebuilt iframe API for seamless video sessions.
+
+Data: Firebase Realtime Database to store class info, room URLs, and quiz states.
+
+Routing: React Router for navigation between main, class, and video call pages.
+
+Whiteboard: LiveBlocks for collaborative whiteboard integration
+> npx create-liveblocks-app@latest --init --framework react
+
+We designed it so that creating a class automatically generates a persistent video room behind the scenes. When a teacher clicks into the class, the room is ready to go.
+
+---
+
+## How to Run
+
+Follow the steps below to install dependencies and start the development server:
+
+```bash
+# Install dependencies in the root project
+npm install
+
+# Navigate to the whiteboard sub-repository and install its dependencies
+cd nextjs-whiteboard-advanced && npm install
+
+# Create env file and include secret key
+code .env.local 
+# LIVEBLOCKS_SECRET_KEY=sk_dev_nmGIFjT4ZgyeiFVAsbErUUHDzzBeKTxQNb1f-UMuoue4vnujBoylGn9kEc5b0BaN
+
+# Start the development server
+cd - && npm run dev
+```
+
+
+
+
+
+---
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
