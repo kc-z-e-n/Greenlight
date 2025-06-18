@@ -16,7 +16,8 @@ import FeedbackPage from './FeedbackPage';
 
 const VideoCallWrapper: React.FC = () => {
   const { user } = useAuth();
-  const { roomUrl } = useParams<{ roomUrl: string }>();
+  const { roomUrl, classId } = useParams();
+  console.log("class", classId)
 
   if (!roomUrl) return <div>No room selected</div>;
 
@@ -27,6 +28,7 @@ const VideoCallWrapper: React.FC = () => {
       <VideoCall 
         roomUrl={decodedRoomUrl} 
         isTeacher={user?.role === 'teacher'} 
+        classId= {classId}
       />
     </div>
   );
@@ -49,10 +51,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/feedback" element={<FeedbackPage />} />
           
           {/* Full-screen video call route */}
-          <Route path="/video-call/:roomUrl" element={<VideoCallWrapper />} />
-
           <Route path="/whiteboard/:roomId" element={<Whiteboard />} />
 
+          <Route path="/video-call/:roomUrl/:classId" element={<VideoCallWrapper />} />
           
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/class/:classId/*"   element={<ClassPage />} />

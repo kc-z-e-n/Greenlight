@@ -11,8 +11,8 @@ import { v4 as uuid } from 'uuid';
  * ② DAILY_API_KEY     found in https://dashboard.daily.co/developers
  *    (add these two to your Vite env:  VITE_DAILY_SUBDOMAIN / VITE_DAILY_API_KEY)
  */
-const SUB = import.meta.env.VITE_DAILY_SUBDOMAIN;
-const API_KEY = import.meta.env.VITE_DAILY_API_KEY;
+const SUB = 'greenlight.daily.co';
+const API_KEY = 'a6996420daac41a5ce1562edb41ec8b6b982ddceaad91fe32dc43ecd44a207b3';
 const DAILY_API = 'https://api.daily.co/v1';
 
 const cleanKey = (s: string) =>

@@ -48,29 +48,22 @@ const VideoCall: React.FC<Props> = ({ roomUrl, isTeacher = false, classId = 'c00
         const quizDataRef = ref(database, `quizzes/${classId}/${quizId}/questionBank`);
         const quizSnapshot = await get(quizDataRef);
         const quizData = quizSnapshot.val();
-
-        if (quizSnapshot.exists()) {
-          setQuizId(quizId); // Save current quizId
-          setShowQuizPopup(true); // Show quiz popup
-          // Optional: fetch & set questions if needed here
-          const quizData = quizSnapshot.val();
-          if (quizData) {
-            // Transform raw data object into array
-            const parsedQuestions: QuizQuestion[] = Object.entries(quizData).map(
-              ([id, data]: [string, any]) => ({
-                id,
-                question: data.question,
-                options: data.options,
-                answer: data.answer,
-              })
-            );
-            console.log(parsedQuestions)
-            setQuizQuestions(parsedQuestions);
-          }
-        } else {
-          console.warn(`Quiz data not found at quizzes/${classId}/${quizId}/questionBank`);
-          setShowQuizPopup(false);
+        setQuizId(quizId); // Save current quizId
+        setShowQuizPopup(true); // Show quiz popup
+        if (quizData) {
+          // Transform raw data object into array
+          const parsedQuestions: QuizQuestion[] = Object.entries(quizData).map(
+            ([id, data]: [string, any]) => ({
+              id,
+              question: data.question,
+              options: data.options,
+              answer: data.answer,
+            })
+          );
+          console.log(parsedQuestions)
+          setQuizQuestions(parsedQuestions);
         }
+
       } catch (err) {
         console.error('Error fetching quiz data:', err);
         setShowQuizPopup(false);
@@ -90,17 +83,25 @@ const VideoCall: React.FC<Props> = ({ roomUrl, isTeacher = false, classId = 'c00
 
     try {
       // Write to database to notify students
-      await set(ref(database, `classes/${classId}/activeQuiz`), quizId.trim());
-      setShowQuizPopup(true); // Show popup for teacher too
-      alert(`Quiz "${quizId}" launched!`);
-      setQuizId('');
+      //to check
+      const quizDataRef = ref(database, `quizzes/${classId}/${quizId}/questionBank`);
+      const quizSnapshot = await get(quizDataRef);
+      if (quizSnapshot.exists()) {
+        setQuizId(quizId); // Save current quizId
+        await set(ref(database, `classes/${classId}/activeQuiz`), quizId.trim());
+        alert(`Quiz "${quizId}" launched!`);
+        setQuizId('');
+      } else {
+        throw new Error("Quiz not found")
+      }
+
     } catch (error) {
       console.error('Error launching quiz:', error);
-      alert('Failed to launch quiz');
+      alert(`Failed to launch quiz: ${error}`);
     }
   };
 
-  // 🔁 destroy returns a Promise so we can await
+
   const destroyFrame = async () => {
     const frame = callFrameRef.current;
     if (!frame) return;
@@ -120,15 +121,8 @@ const VideoCall: React.FC<Props> = ({ roomUrl, isTeacher = false, classId = 'c00
 
   const leaveAndBack = async () => {
     await destroyFrame();
-    if (!isTeacher) {
-      navigate('/feedback'); 
-    } else {
-      navigate(-1);
-    }
+    navigate(-1);
   };
-
-
-  
   // Close popup
   const startQuiz = () => {
     setShowQuizPopup(false);
@@ -171,40 +165,16 @@ const VideoCall: React.FC<Props> = ({ roomUrl, isTeacher = false, classId = 'c00
         ← Back
       </button>
 
-      <button
+       <button
       onClick={() => navigate(`/whiteboard/${classId}`)}
       className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded"
     >
       Open Whiteboard
     </button>
 
-      <div
-        id="video-container"
-        style={{ minWidth: 700, minHeight: 600 }}
-        className="w-full h-full"
-      />
-
-      {isTeacher && (
-        <div className="absolute top-4 right-4 w-56 bg-white rounded-lg shadow p-4 space-y-2 z-10">
-          <h3 className="font-semibold text-sm">Quiz Control</h3>
-          <input
-            className="w-full p-2 border border-gray-300 rounded text-sm"
-            placeholder="Quiz id (e.g. q1)"
-            value={quizId}
-            onChange={e => setQuizId(e.target.value)}
-          />
-          <button
-            onClick={launchQuiz}
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded"
-          >
-            Start Quiz
-          </button>
-        </div>
-      )}
-
       {/* Quiz Notification Popup */}
       {showQuizPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{justifyItems: 'center'}}>
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">
               {isTeacher ? 'Quiz Launched!' : 'New Quiz Available!'}
@@ -226,8 +196,39 @@ const VideoCall: React.FC<Props> = ({ roomUrl, isTeacher = false, classId = 'c00
         </div>
       )}
       {
-        showQuiz && (<QuizPopup questions={quizQuestions} onClose={() => {}}></QuizPopup>)
+        showQuiz && (<QuizPopup questions={quizQuestions} onClose={() => {setShowQuiz(false) }}></QuizPopup>)
       }
+
+      {isTeacher && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" style={{ justifyItems: 'center' }}>
+          <div className="bg-white rounded-lg shadow p-6 w-80 space-y-4">
+            <h3 className="font-semibold text-lg">Quiz Control</h3>
+            <input
+              className="w-full p-2 border border-gray-300 rounded text-sm"
+              placeholder="Quiz id (e.g. q1)"
+              value={quizId}
+              onChange={e => setQuizId(e.target.value)}
+            />
+            <button
+              onClick={launchQuiz}
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded"
+            >
+              Start Quiz
+            </button>
+          </div>
+        </div>
+      )}
+
+
+      <div
+        id="video-container"
+        style={{ minWidth: 700, minHeight: 600 }}
+        className="w-full h-full"
+      />
+
+
+
+      
     </div>
   );
 };

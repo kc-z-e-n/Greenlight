@@ -20,6 +20,7 @@ const ClassList: React.FC<ClassListProps> = ({ darkMode }) => {
   useEffect(() => {
     if (!user) return;
     (async () => {
+      console.log(user)
       const snap = await get(ref(database, 'classes'));
       const arr: ClassItem[] = [];
       snap.forEach((c) => {
