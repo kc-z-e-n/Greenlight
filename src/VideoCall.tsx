@@ -20,7 +20,7 @@ type QuizQuestion = {
   answer: string;
 };
 
-const VideoCall: React.FC<Props> = ({ roomUrl, isTeacher = false, classId = 'c001' }) => {
+const VideoCall: React.FC<Props> = ({ roomUrl, isTeacher = false, classId = 'new_class' }) => {
   const callFrameRef = useRef<DailyCall | null>(null);
   const [quizId, setQuizId] = useState('');
   const [showQuizPopup, setShowQuizPopup] = useState(false);
@@ -48,22 +48,29 @@ const VideoCall: React.FC<Props> = ({ roomUrl, isTeacher = false, classId = 'c00
         const quizDataRef = ref(database, `quizzes/${classId}/${quizId}/questionBank`);
         const quizSnapshot = await get(quizDataRef);
         const quizData = quizSnapshot.val();
-        setQuizId(quizId); // Save current quizId
-        setShowQuizPopup(true); // Show quiz popup
-        if (quizData) {
-          // Transform raw data object into array
-          const parsedQuestions: QuizQuestion[] = Object.entries(quizData).map(
-            ([id, data]: [string, any]) => ({
-              id,
-              question: data.question,
-              options: data.options,
-              answer: data.answer,
-            })
-          );
-          console.log(parsedQuestions)
-          setQuizQuestions(parsedQuestions);
-        }
 
+        if (quizSnapshot.exists()) {
+          setQuizId(quizId); // Save current quizId
+          setShowQuizPopup(true); // Show quiz popup
+          // Optional: fetch & set questions if needed here
+          const quizData = quizSnapshot.val();
+          if (quizData) {
+            // Transform raw data object into array
+            const parsedQuestions: QuizQuestion[] = Object.entries(quizData).map(
+              ([id, data]: [string, any]) => ({
+                id,
+                question: data.question,
+                options: data.options,
+                answer: data.answer,
+              })
+            );
+            console.log(parsedQuestions)
+            setQuizQuestions(parsedQuestions);
+          }
+        } else {
+          console.warn(`Quiz data not found at quizzes/${classId}/${quizId}/questionBank`);
+          setShowQuizPopup(false);
+        }
       } catch (err) {
         console.error('Error fetching quiz data:', err);
         setShowQuizPopup(false);
