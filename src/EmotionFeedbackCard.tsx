@@ -1,5 +1,5 @@
-// EmotionFeedbackCard.tsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const emojis = [
   { symbol: '😄', label: 'Happy' },
@@ -85,6 +85,14 @@ const EmotionFeedbackCard: React.FC<EmotionFeedbackCardProps> = ({ darkMode }) =
     transition: 'all 0.2s ease',
   };
 
+const navigate = useNavigate();
+
+const handleSubmit = () => {
+  // Save feedback to Firebase here?
+  navigate('/');
+};
+
+
   return (
     <div style={cardStyle}>
       <button style={backBtnStyle}>← Peer Feedback</button>
@@ -113,9 +121,14 @@ const EmotionFeedbackCard: React.FC<EmotionFeedbackCardProps> = ({ darkMode }) =
         ))}
       </div>
 
-      <button style={nextBtnStyle} disabled={selected === null}>
-        Submit Feedback
-      </button>
+      <button
+  style={nextBtnStyle}
+  disabled={selected === null}
+  onClick={handleSubmit}
+>
+  Submit Feedback
+</button>
+
     </div>
   );
 };

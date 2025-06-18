@@ -12,8 +12,8 @@ import CreateClass from './pages/CreateClass';
 import AddStudentToClass from './pages/AddStudentToClass';
 import ClassPage from './pages/ClassPage';
 import VideoCall from './VideoCall';
+import FeedbackPage from './FeedbackPage';
 
-// Wrapper for VideoCall route with proper full-screen layout
 const VideoCallWrapper: React.FC = () => {
   const { user } = useAuth();
   const { roomUrl } = useParams<{ roomUrl: string }>();
@@ -46,6 +46,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/register" element={<AuthPage />} />
           <Route path="/create-class" element={<CreateClass />} />
           <Route path="/add-student" element={<AddStudentToClass />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
           
           {/* Full-screen video call route */}
           <Route path="/video-call/:roomUrl" element={<VideoCallWrapper />} />

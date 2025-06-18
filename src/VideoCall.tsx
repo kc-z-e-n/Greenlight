@@ -120,8 +120,13 @@ const VideoCall: React.FC<Props> = ({ roomUrl, isTeacher = false, classId = 'c00
 
   const leaveAndBack = async () => {
     await destroyFrame();
-    navigate(-1);
+    if (!isTeacher) {
+      navigate('/feedback'); 
+    } else {
+      navigate(-1);
+    }
   };
+  
   // Close popup
   const startQuiz = () => {
     setShowQuizPopup(false);
