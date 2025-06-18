@@ -1,13 +1,13 @@
 # Project : Greenlight
 ---
-### Team name : Chat seek
+### Team name : ChatSeek
 ### Team ID : 34
 ---
 ## Chosen problem statement:
  Theme 2 Problem statement 2
 
 ---
-Greenlight is a remote learning app that enables remote user learning. Emphasis on collaborative tools serve to enable the human touch during remote sessions.
+Greenlight is a remote learning app that enables digital user learning. Emphasis on collaborative tools serve to enable the human touch during remote sessions.
 
 ---
 ## Project details
@@ -19,7 +19,8 @@ The functions built into greenlight seeks to create an interactive environment, 
 - Video call hosting (accessible only by teacher accounts)
 - Video conferencing
 - Live quizzes
-- Post lesson peer feedback
+- Shared whiteboard screen
+- Post lesson peer feedback (accessible only by student accounts)
 
 ## Built with:
 
@@ -59,10 +60,6 @@ code .env.local
 # Start the development server
 cd - && npm run dev
 ```
-
-
-
-
 
 ---
 # React + TypeScript + Vite
