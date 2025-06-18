@@ -126,6 +126,8 @@ const VideoCall: React.FC<Props> = ({ roomUrl, isTeacher = false, classId = 'c00
       navigate(-1);
     }
   };
+
+
   
   // Close popup
   const startQuiz = () => {
@@ -168,6 +170,13 @@ const VideoCall: React.FC<Props> = ({ roomUrl, isTeacher = false, classId = 'c00
       >
         ← Back
       </button>
+
+      <button
+      onClick={() => navigate(`/whiteboard/${classId}`)}
+      className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded"
+    >
+      Open Whiteboard
+    </button>
 
       <div
         id="video-container"

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import PostItNote from '../components/PostItNote';
 import WhiteboardCanvas from '../components/WhiteboardCanvas';
 import './Whiteboard.css';
+import { useNavigate } from 'react-router-dom';
+
 
 type Note = {
   id: number;
@@ -23,9 +25,16 @@ const Whiteboard: React.FC = () => {
     }
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="whiteboard-page">
-
+      <button
+        onClick={() => navigate(-1)}
+        className="absolute top-3 left-3 bg-gray-700 text-white px-3 py-1 rounded z-50"
+      >
+        ← Back
+      </button>
 
       <iframe
         src="http://localhost:3000"

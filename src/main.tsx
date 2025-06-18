@@ -50,6 +50,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           
           {/* Full-screen video call route */}
           <Route path="/video-call/:roomUrl" element={<VideoCallWrapper />} />
+
+          <Route path="/whiteboard/:roomId" element={<Whiteboard />} />
+
           
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/class/:classId/*"   element={<ClassPage />} />
